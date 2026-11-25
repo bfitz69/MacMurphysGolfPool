@@ -1,0 +1,1887 @@
+<!DOCTYPE html>
+<html lang="en" class="dark">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, minimum-scale=0.25" />
+  <title>British Open Golf Pool Tracker</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800;900&display=swap" rel="stylesheet">
+  <style>
+    :root {
+      --background: hsl(140, 40%, 6%);
+      --foreground: hsl(140, 20%, 96%);
+      --card: hsl(140, 40%, 10%);
+      --card-80: hsla(140, 40%, 10%, 0.80);
+      --card-95: hsla(140, 40%, 10%, 0.95);
+      --card-70: hsla(140, 40%, 10%, 0.70);
+      --card-60: hsla(140, 40%, 10%, 0.60);
+      --primary: hsl(140, 50%, 40%);
+      --primary-90: hsla(140, 50%, 40%, 0.90);
+      --primary-80: hsla(140, 50%, 40%, 0.80);
+      --primary-foreground: hsl(0, 0%, 100%);
+      --secondary: hsl(45, 90%, 50%);
+      --secondary-foreground: hsl(45, 90%, 10%);
+      --secondary-20: hsla(45, 90%, 50%, 0.20);
+      --secondary-10: hsla(45, 90%, 50%, 0.10);
+      --secondary-05: hsla(45, 90%, 50%, 0.05);
+      --secondary-30: hsla(45, 90%, 50%, 0.30);
+      --secondary-40: hsla(45, 90%, 50%, 0.40);
+      --muted: hsl(140, 30%, 15%);
+      --muted-40: hsla(140, 30%, 15%, 0.40);
+      --muted-25: hsla(140, 30%, 15%, 0.25);
+      --muted-20: hsla(140, 30%, 15%, 0.20);
+      --muted-10: hsla(140, 30%, 15%, 0.10);
+      --muted-foreground: hsl(140, 20%, 70%);
+      --border: hsl(140, 30%, 20%);
+      --border-60: hsla(140, 30%, 20%, 0.60);
+      --border-50: hsla(140, 30%, 20%, 0.50);
+      --border-40: hsla(140, 30%, 20%, 0.40);
+      --border-30: hsla(140, 30%, 20%, 0.30);
+      --border-20: hsla(140, 30%, 20%, 0.20);
+      --destructive: hsl(0, 62.8%, 30.6%);
+      --destructive-text: #f87171;
+      --red-score: #f87171;
+      --green-live: #22c55e;
+      --green-up: #4ade80;
+      --radius: 0.5rem;
+    }
+
+    * {
+      box-sizing: border-box;
+      margin: 0;
+      padding: 0;
+      border-color: var(--border);
+    }
+
+    body {
+      font-family: 'Inter', -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif;
+      background-color: var(--background);
+      color: var(--foreground);
+      -webkit-font-smoothing: antialiased;
+      min-height: 100vh;
+      padding-bottom: 3rem;
+      line-height: 1.5;
+    }
+
+    /* Top Banner */
+    .top-banner {
+      background-color: var(--primary);
+      color: var(--primary-foreground);
+      border-bottom: 1px solid hsla(140, 50%, 40%, 0.2);
+      box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.35);
+    }
+
+    .top-banner-inner {
+      max-width: 64rem;
+      margin: 0 auto;
+      padding: 0.75rem 1rem;
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      gap: 0.5rem;
+    }
+
+    .brand-group {
+      display: flex;
+      align-items: center;
+      gap: 0.5rem;
+      min-width: 0;
+    }
+
+    .brand-logo {
+      height: 2.5rem;
+      width: 2.5rem;
+      object-fit: contain;
+      flex-shrink: 0;
+      border-radius: 9999px;
+    }
+
+    .brand-name {
+      font-weight: 700;
+      letter-spacing: -0.025em;
+      white-space: nowrap;
+      overflow: hidden;
+      text-overflow: ellipsis;
+    }
+
+    .prize-group {
+      display: flex;
+      align-items: center;
+      gap: 0.75rem;
+      font-size: 0.875rem;
+      font-weight: 500;
+      flex-shrink: 0;
+    }
+
+    .prize-total {
+      display: flex;
+      align-items: center;
+      gap: 0.375rem;
+      opacity: 0.92;
+    }
+
+    .prize-pills {
+      display: flex;
+      align-items: center;
+      gap: 0.375rem;
+      color: rgba(255, 255, 255, 0.8);
+      font-size: 0.75rem;
+    }
+
+    .prize-pill {
+      background: rgba(255, 255, 255, 0.12);
+      padding: 0.125rem 0.5rem;
+      border-radius: 9999px;
+    }
+
+    .hide-xs { display: none; }
+    .hide-sm { display: none; }
+    @media (min-width: 420px) { .hide-xs { display: inline; } }
+    @media (min-width: 640px) { .hide-sm { display: inline-block; } }
+
+    /* Main Container */
+    main {
+      max-width: 64rem;
+      margin: 0 auto;
+      padding: 1.5rem 0.75rem 0;
+    }
+    @media (min-width: 640px) {
+      main { padding: 2rem 1rem 0; }
+    }
+
+    /* Header Row */
+    .page-header {
+      display: flex;
+      flex-direction: column;
+      align-items: flex-start;
+      justify-content: space-between;
+      gap: 0.75rem;
+      margin-bottom: 1.5rem;
+    }
+    @media (min-width: 640px) {
+      .page-header {
+        flex-direction: row;
+        align-items: center;
+        gap: 1rem;
+        margin-bottom: 2rem;
+      }
+    }
+
+    .page-title {
+      font-size: 1.875rem;
+      font-weight: 900;
+      letter-spacing: -0.025em;
+      line-height: 1.2;
+    }
+
+    .status-line {
+      display: flex;
+      align-items: center;
+      gap: 0.5rem;
+      margin-top: 0.25rem;
+      font-size: 0.875rem;
+      color: var(--muted-foreground);
+    }
+
+    .btn-primary {
+      display: inline-flex;
+      align-items: center;
+      justify-content: center;
+      gap: 0.5rem;
+      background-color: var(--primary);
+      color: var(--primary-foreground);
+      border: none;
+      border-radius: var(--radius);
+      padding: 0.55rem 1rem;
+      font-size: 0.875rem;
+      font-weight: 600;
+      cursor: pointer;
+      box-shadow: 0 1px 2px rgba(0,0,0,0.25);
+      transition: background-color 0.15s, opacity 0.15s;
+    }
+    .btn-primary:hover:not(:disabled) { background-color: var(--primary-90); }
+    .btn-primary:disabled { opacity: 0.6; cursor: not-allowed; }
+
+    .btn-outline {
+      display: inline-flex;
+      align-items: center;
+      justify-content: center;
+      gap: 0.25rem;
+      background: transparent;
+      color: var(--foreground);
+      border: 1px solid var(--border);
+      border-radius: 0.375rem;
+      height: 2rem;
+      padding: 0 0.65rem;
+      font-size: 0.75rem;
+      font-weight: 600;
+      cursor: pointer;
+      transition: background-color 0.15s;
+    }
+    .btn-outline.icon-only { width: 2rem; padding: 0; }
+    .btn-outline:hover:not(:disabled) { background-color: var(--muted); }
+    .btn-outline:disabled { opacity: 0.4; cursor: not-allowed; }
+
+    @keyframes spin { from { transform: rotate(0deg); } to { transform: rotate(360deg); } }
+    .spin { animation: spin 1s linear infinite; }
+
+    .error-banner {
+      margin-bottom: 1.5rem;
+      padding: 1rem;
+      border-radius: var(--radius);
+      border: 1px solid rgba(248, 113, 113, 0.35);
+      background: rgba(248, 113, 113, 0.1);
+      color: #fca5a5;
+      font-size: 0.875rem;
+    }
+
+    /* StatsBar */
+    .stats-grid {
+      display: grid;
+      grid-template-columns: repeat(2, 1fr);
+      gap: 0.75rem;
+      margin-bottom: 2rem;
+    }
+    @media (min-width: 640px) {
+      .stats-grid { grid-template-columns: repeat(4, 1fr); }
+    }
+
+    .stat-card {
+      background-color: var(--card-60);
+      border: 1px solid var(--border-50);
+      border-radius: 0.75rem;
+      padding: 1rem;
+      display: flex;
+      flex-direction: column;
+      gap: 0.25rem;
+      min-width: 0;
+    }
+
+    .stat-label {
+      display: flex;
+      align-items: center;
+      gap: 0.375rem;
+      font-size: 0.75rem;
+      font-weight: 700;
+      color: var(--muted-foreground);
+      text-transform: uppercase;
+      letter-spacing: 0.05em;
+    }
+
+    .stat-primary {
+      font-size: 1rem;
+      font-weight: 900;
+      white-space: nowrap;
+      overflow: hidden;
+      text-overflow: ellipsis;
+    }
+    .stat-primary.accent { color: var(--secondary); }
+
+    .stat-secondary {
+      font-size: 0.75rem;
+      color: var(--muted-foreground);
+      white-space: nowrap;
+      overflow: hidden;
+      text-overflow: ellipsis;
+    }
+
+    /* Dual Projected Standings Grid */
+    .projected-grid {
+      display: grid;
+      grid-template-columns: 1fr;
+      gap: 1rem;
+    }
+    @media (min-width: 1024px) {
+      .projected-grid { grid-template-columns: 1fr 1fr; }
+    }
+
+    .projected-panel {
+      margin-bottom: 1.5rem;
+      border-radius: 0.75rem;
+      border: 1px solid var(--border-60);
+      background-color: var(--card-70);
+      overflow: hidden;
+    }
+
+    .projected-header-btn {
+      width: 100%;
+      padding: 0.875rem 1.25rem;
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      background: transparent;
+      border: none;
+      color: inherit;
+      cursor: pointer;
+      text-align: left;
+      transition: background-color 0.15s;
+    }
+    .projected-header-btn:hover { background-color: var(--muted-20); }
+
+    .projected-title-wrap {
+      display: flex;
+      align-items: center;
+      gap: 0.625rem;
+      min-width: 0;
+    }
+
+    .projected-title {
+      font-size: 0.875rem;
+      font-weight: 900;
+      text-transform: uppercase;
+      letter-spacing: 0.025em;
+      display: flex;
+      align-items: center;
+      gap: 0.45rem;
+      flex-wrap: wrap;
+    }
+
+    .projected-sub {
+      font-size: 0.75rem;
+      color: var(--muted-foreground);
+      margin-top: 0.125rem;
+    }
+
+    .golfer-select {
+      background-color: var(--primary-80);
+      border: 1px solid var(--secondary-40);
+      color: var(--secondary);
+      font-size: 0.75rem;
+      font-weight: 900;
+      border-radius: 0.375rem;
+      padding: 0.15rem 0.5rem;
+      text-transform: uppercase;
+      letter-spacing: 0.025em;
+      cursor: pointer;
+      outline: none;
+    }
+    .golfer-select option {
+      background-color: var(--card);
+      color: var(--foreground);
+    }
+
+    .projected-body {
+      border-top: 1px solid var(--border-40);
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+    }
+
+    .projected-col-right {
+      border-left: 1px solid var(--border-30);
+    }
+
+    .proj-table-head {
+      display: grid;
+      grid-template-columns: 20px 1fr auto auto auto;
+      align-items: center;
+      column-gap: 0.5rem;
+      padding: 0.5rem 0.75rem;
+      font-size: 10px;
+      font-weight: 700;
+      text-transform: uppercase;
+      letter-spacing: 0.08em;
+      color: var(--muted-foreground);
+      border-bottom: 1px solid var(--border-30);
+      background-color: var(--muted-10);
+    }
+
+    .proj-row {
+      display: grid;
+      grid-template-columns: 20px 1fr auto auto auto;
+      align-items: center;
+      column-gap: 0.5rem;
+      padding: 0.5rem 0.75rem;
+      border-bottom: 1px solid var(--border-20);
+      transition: background-color 0.12s;
+    }
+    .proj-row:last-child { border-bottom: none; }
+    .proj-row:hover { background-color: var(--muted-10); }
+    .proj-row.bonus-row { background-color: var(--secondary-05); }
+    .proj-row.bonus-row:hover { background-color: var(--secondary-10); }
+
+    .proj-rank {
+      font-size: 0.75rem;
+      font-weight: 900;
+      font-variant-numeric: tabular-nums;
+      color: var(--muted-foreground);
+    }
+    .proj-rank.rank-1 { color: var(--secondary); }
+
+    .proj-entry {
+      display: flex;
+      align-items: center;
+      gap: 0.25rem;
+      min-width: 0;
+      font-size: 0.75rem;
+      font-weight: 700;
+      text-transform: uppercase;
+      letter-spacing: -0.015em;
+    }
+    .proj-entry span {
+      white-space: nowrap;
+      overflow: hidden;
+      text-overflow: ellipsis;
+    }
+
+    .proj-cur {
+      font-size: 0.75rem;
+      font-variant-numeric: tabular-nums;
+      color: var(--muted-foreground);
+      text-align: right;
+    }
+
+    .proj-score {
+      font-size: 0.75rem;
+      font-weight: 900;
+      font-variant-numeric: tabular-nums;
+      text-align: right;
+    }
+    .score-under { color: var(--red-score); }
+    .score-over { color: var(--foreground); }
+    .score-even { color: var(--muted-foreground); }
+
+    .proj-move {
+      display: flex;
+      justify-content: flex-end;
+      align-items: center;
+      font-size: 0.75rem;
+      font-weight: 700;
+    }
+    .move-up { color: var(--green-up); display: inline-flex; align-items: center; gap: 2px; }
+    .move-down { color: var(--red-score); display: inline-flex; align-items: center; gap: 2px; }
+    .move-flat { color: var(--muted-foreground); opacity: 0.5; }
+
+    /* Ranking Chart Card */
+    .chart-card {
+      border: 1px solid var(--border-50);
+      background-color: var(--card-80);
+      border-radius: 0.75rem;
+      margin-bottom: 1.5rem;
+      overflow: hidden;
+    }
+
+    .chart-header {
+      padding: 1rem 1.25rem 0.75rem;
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      flex-wrap: wrap;
+      gap: 0.75rem;
+    }
+
+    .chart-title {
+      font-size: 0.95rem;
+      font-weight: 700;
+      text-transform: uppercase;
+      letter-spacing: 0.08em;
+      color: var(--muted-foreground);
+    }
+
+    .chart-controls {
+      display: flex;
+      align-items: center;
+      gap: 0.375rem;
+    }
+
+    .chart-step-label {
+      margin-left: 0.5rem;
+      font-size: 0.875rem;
+      font-weight: 600;
+      min-width: 80px;
+    }
+
+    .chart-body {
+      padding: 0 0.75rem 0.75rem;
+    }
+
+    .chart-dot-group {
+      transition: transform 1.2s ease-in-out;
+    }
+
+    /* Entrant Cards */
+    .cards-stack {
+      display: flex;
+      flex-direction: column;
+      gap: 1rem;
+    }
+
+    .entrant-card {
+      border: 1px solid var(--border);
+      border-left: 4px solid transparent;
+      border-radius: 0.75rem;
+      background-color: var(--card-80);
+      overflow: hidden;
+    }
+
+    .entrant-card.rank-1 {
+      border-left-color: var(--secondary);
+      background-color: var(--card-95);
+      box-shadow: 0 4px 12px rgba(0, 0, 0, 0.28);
+    }
+
+    .entrant-card-header {
+      padding: 0.75rem 1rem 0.5rem;
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      gap: 0.5rem;
+    }
+    @media (min-width: 640px) {
+      .entrant-card-header { padding: 1rem 1.5rem 0.5rem; }
+    }
+
+    .entrant-id-group {
+      display: flex;
+      align-items: center;
+      gap: 0.625rem;
+      min-width: 0;
+    }
+
+    .rank-circle {
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      width: 1.75rem;
+      height: 1.75rem;
+      border-radius: 9999px;
+      font-weight: 900;
+      font-size: 1rem;
+      flex-shrink: 0;
+      background-color: var(--muted);
+      color: var(--muted-foreground);
+    }
+    @media (min-width: 640px) {
+      .rank-circle { width: 2rem; height: 2rem; font-size: 1.125rem; }
+    }
+    .rank-circle.gold {
+      background-color: var(--secondary);
+      color: var(--secondary-foreground);
+    }
+
+    .entrant-name {
+      font-size: 1.125rem;
+      font-weight: 900;
+      letter-spacing: -0.025em;
+      text-transform: uppercase;
+      white-space: nowrap;
+      overflow: hidden;
+      text-overflow: ellipsis;
+    }
+    @media (min-width: 640px) {
+      .entrant-name { font-size: 1.5rem; }
+    }
+
+    .cut-badge {
+      font-size: 0.75rem;
+      font-weight: 600;
+      color: var(--muted-foreground);
+      border: 1px solid var(--border-50);
+      border-radius: 9999px;
+      padding: 0.1rem 0.55rem;
+      flex-shrink: 0;
+    }
+
+    .entrant-score-col {
+      display: flex;
+      flex-direction: column;
+      align-items: flex-end;
+      flex-shrink: 0;
+    }
+
+    .entrant-total {
+      font-size: 1.875rem;
+      font-weight: 900;
+      font-variant-numeric: tabular-nums;
+      letter-spacing: -0.05em;
+      line-height: 1.05;
+    }
+    @media (min-width: 640px) {
+      .entrant-total { font-size: 2.25rem; }
+    }
+
+    .strokes-back {
+      font-size: 0.75rem;
+      font-weight: 600;
+      color: var(--muted-foreground);
+      margin-top: -2px;
+    }
+    @media (min-width: 640px) {
+      .strokes-back { font-size: 0.875rem; }
+    }
+
+    /* Tiebreaker Banner */
+    .tb-banner {
+      margin: 0.25rem 1rem 0;
+      padding: 0.5rem 0.75rem;
+      border-radius: 0.5rem;
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      gap: 0.5rem;
+      font-size: 0.75rem;
+      font-weight: 600;
+      border: 1px solid var(--border-40);
+      background-color: var(--muted-40);
+      color: var(--muted-foreground);
+    }
+    @media (min-width: 640px) {
+      .tb-banner { margin: 0.25rem 1.5rem 0; }
+    }
+    .tb-banner.tb-win {
+      background-color: var(--secondary-10);
+      border-color: var(--secondary-30);
+      color: var(--secondary);
+    }
+
+    .tb-left {
+      display: flex;
+      align-items: center;
+      gap: 0.375rem;
+      min-width: 0;
+    }
+
+    .tb-pill {
+      flex-shrink: 0;
+      text-transform: uppercase;
+      letter-spacing: 0.04em;
+      font-size: 10px;
+      font-weight: 900;
+      padding: 0.15rem 0.5rem;
+      border-radius: 9999px;
+      background-color: var(--muted);
+      color: var(--muted-foreground);
+    }
+    .tb-banner.tb-win .tb-pill {
+      background-color: var(--secondary-20);
+      color: var(--secondary);
+    }
+
+    /* Card Content */
+    .entrant-card-content {
+      padding: 0.75rem 1rem 1rem;
+    }
+    @media (min-width: 640px) {
+      .entrant-card-content { padding: 0.75rem 1.5rem 1.25rem; }
+    }
+
+    .picks-layout {
+      display: grid;
+      grid-template-columns: 1fr;
+      gap: 1rem;
+    }
+    @media (min-width: 768px) {
+      .picks-layout {
+        grid-template-columns: 1fr 250px;
+        gap: 1.5rem;
+      }
+    }
+
+    .section-label {
+      font-size: 0.75rem;
+      font-weight: 700;
+      color: var(--muted-foreground);
+      text-transform: uppercase;
+      letter-spacing: 0.05em;
+      margin-bottom: 0.75rem;
+      display: flex;
+      align-items: center;
+      gap: 0.5rem;
+    }
+
+    .golfer-grid {
+      display: grid;
+      grid-template-columns: repeat(2, 1fr);
+      gap: 0.5rem;
+    }
+    @media (min-width: 640px) {
+      .golfer-grid { grid-template-columns: repeat(5, 1fr); }
+    }
+
+    .golfer-pill {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      padding: 0.5rem;
+      border-radius: 0.375rem;
+      border: 1px solid var(--border-40);
+      background-color: var(--muted-40);
+    }
+    .golfer-pill.dim {
+      background-color: var(--muted-25);
+      border-color: var(--border-30);
+      opacity: 0.7;
+    }
+    .golfer-pill.cut {
+      background-color: var(--muted-20);
+      border-color: var(--border-20);
+      opacity: 0.5;
+    }
+
+    .golfer-pill-name {
+      font-size: 0.875rem;
+      font-weight: 500;
+      white-space: nowrap;
+      overflow: hidden;
+      text-overflow: ellipsis;
+      padding-right: 0.5rem;
+    }
+    .golfer-pill.cut .golfer-pill-name {
+      text-decoration: line-through;
+      color: var(--muted-foreground);
+    }
+
+    .golfer-pill-score {
+      font-size: 0.875rem;
+      font-weight: 700;
+      font-variant-numeric: tabular-nums;
+      white-space: nowrap;
+    }
+
+    /* Winner Pick Column */
+    .winner-col {
+      padding-top: 0;
+    }
+    @media (min-width: 768px) {
+      .winner-col {
+        border-left: 1px solid var(--border-60);
+        padding-left: 1.5rem;
+      }
+    }
+
+    .winner-box {
+      padding: 0.75rem;
+      border-radius: 0.5rem;
+      border: 1px solid var(--border-40);
+      background-color: var(--muted-40);
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      gap: 0.5rem;
+    }
+    .winner-box.leading {
+      background-color: var(--secondary-10);
+      border-color: var(--secondary-30);
+    }
+
+    .winner-name {
+      font-size: 0.875rem;
+      font-weight: 700;
+    }
+    .winner-name.cut {
+      text-decoration: line-through;
+      color: var(--muted-foreground);
+    }
+
+    .winner-sub-tag {
+      font-size: 10px;
+      font-weight: 700;
+      text-transform: uppercase;
+      display: block;
+    }
+    .winner-sub-tag.lead { color: var(--secondary); opacity: 0.85; }
+    .winner-sub-tag.cut { color: var(--red-score); opacity: 0.75; }
+
+    .winner-score-badge {
+      font-weight: 700;
+      font-variant-numeric: tabular-nums;
+      font-size: 0.875rem;
+      border: 2px solid var(--border);
+      border-radius: 9999px;
+      padding: 0.1rem 0.6rem;
+      flex-shrink: 0;
+    }
+    .winner-score-badge.under {
+      color: var(--red-score);
+      border-color: rgba(248, 113, 113, 0.25);
+    }
+    .winner-score-badge.cut {
+      color: var(--muted-foreground);
+    }
+
+    /* Bench Expand */
+    .bench-toggle {
+      margin-top: 1rem;
+      display: inline-flex;
+      align-items: center;
+      gap: 0.375rem;
+      background: transparent;
+      border: none;
+      font-size: 0.75rem;
+      font-weight: 700;
+      text-transform: uppercase;
+      letter-spacing: 0.05em;
+      color: var(--muted-foreground);
+      cursor: pointer;
+      transition: color 0.15s;
+    }
+    .bench-toggle:hover { color: var(--foreground); }
+
+    .bench-panel {
+      margin-top: 0.75rem;
+      padding-top: 0.75rem;
+      border-top: 1px solid var(--border-40);
+    }
+    .bench-caption {
+      font-size: 0.75rem;
+      font-weight: 500;
+      color: var(--muted-foreground);
+      margin-bottom: 0.5rem;
+    }
+
+    .loading-state {
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      gap: 0.75rem;
+      padding: 6rem 0;
+      color: var(--muted-foreground);
+      font-size: 1.125rem;
+    }
+
+    .hidden { display: none !important; }
+  </style>
+</head>
+<body>
+  <!-- Top Banner -->
+  <div class="top-banner">
+    <div class="top-banner-inner">
+      <div class="brand-group">
+        <img src="data:image/png;base64,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" alt="The Open Championship" class="brand-logo" />
+        <span class="brand-name">British Open Pool</span>
+      </div>
+      <div class="prize-group">
+        <div class="prize-total">
+          <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="hsl(45, 90%, 50%)" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M7.21 15 2.66 7.14a2 2 0 0 1 .13-2.2L4.4 2.8A2 2 0 0 1 6 2h12a2 2 0 0 1 1.6.8l1.6 2.14a2 2 0 0 1 .14 2.2L16.79 15"/><path d="M11 12 5.12 2.2"/><path d="m13 12 5.88-9.8"/><path d="M8 7h8"/><circle cx="12" cy="17" r="5"/><path d="M12 18v-2h-.5"/></svg>
+          <span class="hide-xs">Prize Pool: </span>
+          <span id="prize-total">$540</span>
+        </div>
+        <div class="prize-pills">
+          <span class="prize-pill" id="prize-first">1st: $405</span>
+          <span class="prize-pill hide-sm" id="prize-second">2nd: $135</span>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <main>
+    <!-- Header Row -->
+    <div class="page-header">
+      <div>
+        <h1 class="page-title">Leaderboard</h1>
+        <div class="status-line">
+          <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="10"/><polyline points="12 6 12 12 16 14"/></svg>
+          <span id="status-text">Fetching live scores...</span>
+          <span id="wifi-icon"></span>
+        </div>
+      </div>
+      <button id="btn-refresh" class="btn-primary">
+        <svg id="refresh-icon" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M3 12a9 9 0 0 1 9-9 9.75 9.75 0 0 1 6.74 2.74L21 8"/><path d="M21 3v5h-5"/><path d="M21 12a9 9 0 0 1-9 9 9.75 9.75 0 0 1-6.74-2.74L3 16"/><path d="M8 16H3v5"/></svg>
+        <span id="refresh-label">Refresh Scores</span>
+      </button>
+    </div>
+
+    <div id="error-banner" class="error-banner hidden"></div>
+
+    <!-- StatsBar -->
+    <div id="stats-bar" class="stats-grid hidden"></div>
+
+    <!-- Dual Projected Standings -->
+    <div id="projected-grid" class="projected-grid"></div>
+
+    <!-- Pool Rankings by Round Chart -->
+    <div id="ranking-chart"></div>
+
+    <!-- Loading Indicator -->
+    <div id="loading-state" class="loading-state">
+      <svg class="spin" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M3 12a9 9 0 0 1 9-9 9.75 9.75 0 0 1 6.74 2.74L21 8"/><path d="M21 3v5h-5"/><path d="M21 12a9 9 0 0 1-9 9 9.75 9.75 0 0 1-6.74-2.74L3 16"/><path d="M8 16H3v5"/></svg>
+      <span>Loading live scores from ESPN...</span>
+    </div>
+
+    <!-- Entrant Cards List -->
+    <div id="leaderboard-cards" class="cards-stack"></div>
+  </main>
+
+  <script>
+    // =========================================================================
+    // 1. MASTER DATA (Authoritative 157 golfers & 28 entrants from Replit)
+    // =========================================================================
+    const GOLFERS = {
+  1: "Ludvig Aberg", 2: "Angel Ayora", 3: "Sam Bairstow", 4: "Matthew Baldwin", 5: "Jose Luis Ballester",
+  6: "Daniel Berger", 7: "Akshay Bhatia", 8: "Dan Bradbury", 9: "Keegan Bradley", 10: "Michael Brennan",
+  11: "Jacob Bridgeman", 12: "Daniel Brown", 13: "Jack Buchanan", 14: "Sam Burns", 15: "Laurie Canter",
+  16: "Patrick Cantlay", 17: "Bud Cauley", 18: "Eugenio Chacarra", 19: "Tiger Christensen", 20: "Stewart Cink",
+  21: "Wyndham Clark", 22: "Darren Clarke", 23: "Eric Cole", 24: "Corey Conners", 25: "Pierceson Coody",
+  26: "Martin Couvra", 27: "MJ Daffue", 28: "Jason Day", 29: "De Castro Piera", 30: "Bryson DeChambeau",
+  31: "Thomas Detry", 32: "Alistair Docherty", 33: "Hennie Du Plessis", 34: "David Duval", 35: "Nico Echavarria",
+  36: "Harris English", 37: "Matt Fitzpatrick", 38: "Alex Fitzpatrick", 39: "Tommy Fleetwood", 40: "Rickie Fowler",
+  41: "Ryan Fox", 42: "Ryan Gerard", 43: "Chris Gotterup", 44: "Stuart Grehan", 45: "Max Greyserman",
+  46: "Ben Griffin", 47: "Lev Grinberg", 48: "Harry Hall", 49: "Jeongwoo Ham", 50: "Padraig Harrington",
+  51: "Brian Harman", 52: "Tyrrell Hatton", 53: "Russell Henley", 54: "Lucas Herbert", 55: "Kazuki Higa",
+  56: "Daniel Hillier", 57: "Ryo Hisatsune", 58: "Nicolai Højgaard", 59: "Rasmus Højgaard", 60: "Michael Hollick",
+  61: "Max Homa", 62: "Billy Horschel", 63: "Viktor Hovland", 64: "David Howard", 65: "Mason Howell",
+  66: "Sungjae Im", 67: "Casey Jarvis", 68: "Cameron John", 69: "Matthew Jordan", 70: "Kota Kaneko",
+  71: "Naoyuki Kataoka", 72: "Si Woo Kim", 73: "Michael Kim", 74: "Tom Kim", 75: "Kurt Kitayama",
+  76: "Jake Knapp", 77: "Kazuma Kobori", 78: "Brooks Koepka", 79: "Frederic Lacroix", 80: "Joakim Lagergren",
+  81: "Faisand Laopakdee", 82: "Francesco Laporta", 83: "Min Woo Lee", 84: "Haotong Li", 85: "Shane Lowry",
+  86: "Robert MacIntyre", 87: "Hideki Matsuyama", 88: "Matt McCarty", 89: "Jack McDonald", 90: "Rory McIlroy",
+  91: "Tom McKibbin", 92: "Maverick McNealy", 93: "Keith Mitchell", 94: "Francesco Molinari", 95: "Collin Morikawa",
+  96: "Ryutaro Nagano", 97: "Keita Nakajima", 98: "Rasmus Neergaard-Petersen", 99: "James Nicholas", 100: "Joaquin Niemann",
+  101: "Alex Noren", 102: "Shaun Norris", 103: "Andrew Novak", 104: "Louis Oosthuizen", 105: "John Parry",
+  106: "Marco Penge", 107: "Marcus Plunkett", 108: "J.T. Poston", 109: "David Puig", 110: "Mateo Pulcini",
+  111: "Jon Rahm", 112: "Aaron Rai", 113: "Patrick Reed", 114: "Kristoffer Reitan", 115: "Justin Rose",
+  116: "Antoine Rozner", 117: "Nevill Ruiter", 118: "Adrien Saddier", 119: "Jayden Schaper", 120: "Xander Schauffele",
+  121: "Scottie Scheffler", 122: "Adam Scott", 123: "Birk Bjoernevik Skogen", 124: "Tom Sloman", 125: "Alex Smalley",
+  126: "Jordan Smith", 127: "Cameron Smith", 128: "Travis Smyth", 129: "Matthew Southgate", 130: "J.J. Spaun",
+  131: "Jordan Spieth", 132: "Henrik Stenson", 133: "Sam Stevens", 134: "Sepp Straka", 135: "Jackson Suber",
+  136: "Jackson Suber", 137: "Andy Sullivan", 138: "Caleb Surratt", 139: "Jesper Svensson", 140: "Nick Taylor",
+  141: "Sahith Theegala", 142: "Justin Thomas", 143: "Austen Truslow", 144: "Peter Uihlein", 145: "Sami Valimaki",
+  146: "Scott Vincent", 147: "Matt Wallace", 148: "Till Wiedemeyer", 149: "Bernd Wiesberger", 150: "Gary Woodland",
+  151: "Jiho Yang", 152: "Ren Yonezawa", 153: "Cameron Young",
+};
+
+
+
+const ENTRANTS = [
+  { name: "FI",   picks: [9,14,21,37,38,39,43,51,52,63,74,85,90,95,111,115,120,121,131,153], winnerPick: 115 },
+  { name: "ES",   picks: [12,21,30,37,39,43,63,66,80,85,86,87,90,95,111,115,121,132,142,153], winnerPick: 37 },
+  { name: "KH",   picks: [1,14,21,37,39,43,52,53,63,72,74,86,90,95,111,113,120,121,115,153], winnerPick: 37 },
+  { name: "EM",   picks: [1,14,21,37,39,43,52,53,63,72,74,86,87,90,100,111,115,120,121,153], winnerPick: 37 },
+  { name: "EDK",  picks: [1,21,37,38,39,43,52,63,72,85,86,90,95,111,112,113,115,120,121,153], winnerPick: 37 },
+  { name: "JL",   picks: [14,21,37,39,43,46,58,63,72,85,86,90,95,100,111,112,115,121,127,130], winnerPick: 37 },
+  { name: "RIF",  picks: [1,14,21,37,39,43,52,63,72,73,83,86,90,95,112,113,115,120,121,153], winnerPick: 90 },
+  { name: "FITZ", picks: [1,14,21,37,39,43,52,53,63,72,83,86,90,95,111,115,120,121,142,153], winnerPick: 90 },
+  { name: "BG",   picks: [1,6,9,14,37,39,43,53,63,72,85,90,92,115,120,121,131,134,142,153], winnerPick: 90 },
+  { name: "LKB",  picks: [14,16,21,37,38,39,43,52,53,72,74,83,85,86,90,111,113,120,121,142], winnerPick: 90 },
+  { name: "GWB",  picks: [1,7,16,21,30,39,40,43,83,87,90,96,111,115,120,121,131,132,142,150], winnerPick: 90 },
+  { name: "BST",  picks: [1,14,21,37,39,43,52,63,74,83,85,86,90,95,111,113,115,120,121,153], winnerPick: 90 },
+  { name: "RH",   picks: [1,14,21,37,39,43,52,53,63,72,74,85,86,90,95,111,115,120,121,153], winnerPick: 90 },
+  { name: "CH",   picks: [1,21,37,39,43,52,63,72,78,86,85,90,95,106,111,112,115,120,121,153], winnerPick: 95 },
+  { name: "GP",   picks: [1,11,14,21,37,43,51,53,72,83,87,90,95,100,111,112,113,115,121,131], winnerPick: 95 },
+  { name: "BST1", picks: [6,21,37,39,40,43,51,52,53,63,72,74,85,86,90,95,111,115,120,121], winnerPick: 39 },
+  { name: "DD",   picks: [1,7,14,16,21,37,39,62,63,72,86,90,95,111,113,115,120,121,142,153], winnerPick: 39 },
+  { name: "CJB",  picks: [1,21,30,37,39,41,43,52,63,72,86,90,95,100,115,120,121,127,131,153], winnerPick: 86 },
+  { name: "EP",   picks: [1,14,32,37,39,43,52,53,63,72,74,83,87,90,111,115,121,131,148,153], winnerPick: 74 },
+  { name: "DJ",   picks: [1,14,16,28,30,37,39,43,46,51,52,63,85,90,95,111,114,120,121,131], winnerPick: 120 },
+  { name: "EDF",  picks: [26,28,37,39,52,58,63,66,74,85,86,90,95,108,120,125,126,127,150,153], winnerPick: 153 },
+  { name: "HIC",  picks: [14,21,37,38,39,43,52,63,72,74,83,85,86,90,95,113,115,120,121,140], winnerPick: 21 },
+  { name: "CC",   picks: [1,21,37,43,52,61,63,74,78,85,86,90,111,115,120,121,130,131,134,153], winnerPick: 43 },
+  { name: "CR",   picks: [1,14,37,39,40,43,52,61,63,60,83,86,90,95,115,120,121,131,142,153], winnerPick: 43 },
+  { name: "SD",   picks: [1,21,37,39,43,63,74,78,83,85,86,90,111,120,121,122,131,141,142,153], winnerPick: 43 },
+  { name: "JT",   picks: [1,14,24,36,37,38,39,43,52,53,63,74,90,92,95,111,115,120,121,153], winnerPick: 121 },
+  { name: "BKL",  picks: [14,16,21,37,38,39,43,52,53,72,74,83,85,86,90,111,113,120,121,142], winnerPick: 121 },
+  { name: "LMM",  picks: [1,7,14,21,28,37,39,53,63,72,85,86,90,95,100,115,120,121,131,153], winnerPick: 121 },
+];
+
+    const ESPN_URL = "https://site.api.espn.com/apis/site/v2/sports/golf/pga/scoreboard?dates=20260717-20260720";
+    const CUT_LINE = 1;
+    const ENTRY_FEE = 20;
+    const FREE_ENTRIES = 1;
+
+    const PRIZE_TOTAL = (ENTRANTS.length - FREE_ENTRIES) * ENTRY_FEE;
+    const PRIZE_FIRST = Math.round(PRIZE_TOTAL * 0.75);
+    const PRIZE_SECOND = PRIZE_TOTAL - PRIZE_FIRST;
+
+    document.getElementById("prize-total").textContent = `$${PRIZE_TOTAL}`;
+    document.getElementById("prize-first").textContent = `1st: $${PRIZE_FIRST}`;
+    document.getElementById("prize-second").textContent = `2nd: $${PRIZE_SECOND}`;
+
+    const CHART_COLORS = [
+      "#f87171", "#fb923c", "#fbbf24", "#a3e635", "#34d399",
+      "#22d3ee", "#60a5fa", "#a78bfa", "#f472b6", "#4ade80",
+      "#f43f5e", "#fde68a", "#5eead4", "#93c5fd", "#c4b5fd",
+      "#fbcfe8", "#fed7aa", "#bbf7d0", "#99f6e4", "#bfdbfe",
+      "#ddd6fe", "#fda4af", "#86efac", "#67e8f9", "#d9f99d",
+      "#fef9c3", "#e9d5ff", "#fecdd3"
+    ];
+
+    // =========================================================================
+    // 2. INLINE SVG ICONS (Lucide equivalents)
+    // =========================================================================
+    const ICONS = {
+      wifi: `<svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="#22c55e" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M12 20h.01"/><path d="M2 8.82a15 15 0 0 1 20 0"/><path d="M5 12.859a10 10 0 0 1 14 0"/><path d="M8.5 16.429a5 5 0 0 1 7 0"/></svg>`,
+      wifiOff: `<svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="#f87171" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M12 20h.01"/><path d="M8.5 16.429a5 5 0 0 1 7 0"/><path d="M5 12.859a10 10 0 0 1 5.17-2.69"/><path d="M19 12.859a10 10 0 0 0-2.007-1.523"/><path d="M2 8.82a15 15 0 0 1 4.177-2.643"/><path d="M22 8.82a15 15 0 0 0-11.288-3.764"/><path d="m2 2 20 20"/></svg>`,
+      flag: `<svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M4 15s1-1 4-1 5 2 8 2 4-1 4-1V3s-1 1-4 1-5-2-8-2-4 1-4 1z"/><line x1="4" x2="4" y1="22" y2="15"/></svg>`,
+      star: `<svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><polygon points="12 2 15.09 8.26 22 9.27 17 14.14 18.18 21.02 12 17.77 5.82 21.02 7 14.14 2 9.27 8.91 8.26 12 2"/></svg>`,
+      starGold: `<svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="hsl(45, 90%, 50%)" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" style="flex-shrink:0"><polygon points="12 2 15.09 8.26 22 9.27 17 14.14 18.18 21.02 12 17.77 5.82 21.02 7 14.14 2 9.27 8.91 8.26 12 2"/></svg>`,
+      starTiny: `<svg width="10" height="10" viewBox="0 0 24 24" fill="hsl(45, 90%, 50%)" stroke="hsl(45, 90%, 50%)" stroke-width="2" style="flex-shrink:0"><polygon points="12 2 15.09 8.26 22 9.27 17 14.14 18.18 21.02 12 17.77 5.82 21.02 7 14.14 2 9.27 8.91 8.26 12 2"/></svg>`,
+      scissors: `<svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="6" cy="6" r="3"/><path d="M8.12 8.12 12 12"/><path d="M20 4 8.12 15.88"/><circle cx="6" cy="18" r="3"/><path d="M14.8 14.8 20 20"/></svg>`,
+      users: `<svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M16 21v-2a4 4 0 0 0-4-4H6a4 4 0 0 0-4 4v2"/><circle cx="9" cy="7" r="4"/><path d="M22 21v-2a4 4 0 0 0-3-3.87"/><path d="M16 3.13a4 4 0 0 1 0 7.75"/></svg>`,
+      chevDown: `<svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="m6 9 6 6 6-6"/></svg>`,
+      chevUp: `<svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="m18 15-6-6-6 6"/></svg>`,
+      chevLeft: `<svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="m15 18-6-6 6-6"/></svg>`,
+      chevRight: `<svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="m9 18 6-6-6-6"/></svg>`,
+      trendUp: `<svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><polyline points="22 7 13.5 15.5 8.5 10.5 2 17"/><polyline points="16 7 22 7 22 13"/></svg>`,
+      trendDown: `<svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><polyline points="22 17 13.5 8.5 8.5 13.5 2 7"/><polyline points="16 17 22 17 22 11"/></svg>`,
+      minus: `<svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M5 12h14"/></svg>`,
+      scale: `<svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" style="flex-shrink:0"><path d="m16 16 3-8 3 8c-.87.65-1.92 1-3 1s-2.13-.35-3-1Z"/><path d="m2 16 3-8 3 8c-.87.65-1.92 1-3 1s-2.13-.35-3-1Z"/><path d="M7 21h10"/><path d="M12 3v18"/><path d="M3 7h2c2 0 5-1 7-2 2 1 5 2 7 2h2"/></svg>`,
+      play: `<svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><polygon points="6 3 20 12 6 21 6 3"/></svg>`,
+      pause: `<svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="14" y="4" width="4" height="16" rx="1"/><rect x="6" y="4" width="4" height="16" rx="1"/></svg>`,
+      skipBack: `<svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><polygon points="19 20 9 12 19 4 19 20"/><line x1="5" x2="5" y1="19" y2="5"/></svg>`
+    };
+
+    // =========================================================================
+    // 3. SCORING ENGINE (Exact port of scoring.ts & golf-scores.ts)
+    // =========================================================================
+    function normalizeName(name) {
+      return name
+        .normalize("NFD")
+        .replace(/[\u0300-\u036f]/g, "")
+        .toLowerCase()
+        .trim();
+    }
+
+    function parseScoreStr(displayValue) {
+      if (!displayValue || displayValue === "E") return 0;
+      const n = parseInt(displayValue, 10);
+      return isNaN(n) ? 0 : n;
+    }
+
+    function formatScore(score) {
+      if (score >= 99) return "CUT";
+      if (score === 0) return "E";
+      if (score > 0) return `+${score}`;
+      return `${score}`;
+    }
+
+    function abbrevName(fullName) {
+      const parts = fullName.split(" ");
+      return parts.length > 1 ? `${parts[0][0]}. ${parts.slice(1).join(" ")}` : fullName;
+    }
+
+    async function fetchLiveScores() {
+      const espnRes = await fetch(ESPN_URL);
+      if (!espnRes.ok) throw new Error(`ESPN HTTP ${espnRes.status}`);
+      const data = await espnRes.json();
+
+      const events = data.events || [];
+      const event = events.find((e) => /open/i.test(e.name || "")) || events[0];
+      const competitions = event?.competitions || [];
+      const competition = competitions[0];
+      const competitors = competition?.competitors || [];
+      const currentPeriod = competition?.status?.period ?? 0;
+
+      const rawScoresByName = {};
+      const roundScoresByName = {};
+
+      for (const c of competitors) {
+        const rawName = c.athlete?.displayName || "";
+        const name = normalizeName(rawName);
+        if (!name) continue;
+
+        const statusType = c.status?.type?.name;
+        const linescores = c.linescores || [];
+        const missedCut =
+          statusType === "STATUS_CUT" ||
+          (currentPeriod >= 3 &&
+            linescores.some((ls) => ls.displayValue === "-" && ls.period < currentPeriod));
+
+        const statistics = c.statistics || [];
+        const scoreToParStat = statistics.find((s) => s.name === "scoreToPar");
+
+        let score;
+        if (missedCut) {
+          score = 99;
+        } else if (scoreToParStat && scoreToParStat.value !== undefined) {
+          score = Number(scoreToParStat.value);
+        } else if (typeof c.score === "string") {
+          score = parseScoreStr(c.score);
+        } else {
+          score = parseScoreStr(c.score?.displayValue ?? "E");
+        }
+
+        rawScoresByName[name] = score;
+
+        const perRound = [];
+        for (let p = 1; p <= 4; p++) {
+          const ls = linescores.find((l) => l.period === p && l.displayValue !== "-" && l.displayValue !== "");
+          if (ls) perRound.push(parseScoreStr(ls.displayValue));
+          else break;
+        }
+        if (perRound.length > 0) roundScoresByName[name] = perRound;
+      }
+
+      const golferScores = {};
+      const golferRoundScores = {};
+      for (const [idStr, gName] of Object.entries(GOLFERS)) {
+        const id = Number(idStr);
+        const norm = normalizeName(gName);
+        const score = rawScoresByName[norm];
+        golferScores[id] = score !== undefined ? score : 99;
+        const rounds = roundScoresByName[norm];
+        if (rounds && rounds.length > 0) golferRoundScores[id] = rounds;
+      }
+
+      return { scores: golferScores, roundScores: golferRoundScores };
+    }
+
+    function buildEntrantResult(entrant, scores, bonusGolferId) {
+      const effectiveScore = (raw) => (raw > CUT_LINE ? 99 : raw);
+
+      const allGolfers = entrant.picks.map((id) => {
+        const rawScore = scores[id] ?? 0;
+        const eff = effectiveScore(rawScore);
+        const isBonus =
+          bonusGolferId !== undefined &&
+          id === bonusGolferId &&
+          id === entrant.winnerPick &&
+          eff < 99;
+        return {
+          id,
+          name: GOLFERS[id] ?? `Golfer ${id}`,
+          score: isBonus ? eff - 10 : eff,
+          isCut: eff >= 99,
+          isCounting: false
+        };
+      });
+
+      allGolfers.sort((a, b) => a.score - b.score);
+      const countedGolfers = allGolfers.slice(0, 10).map((g) => ({ ...g, isCounting: true }));
+      const bench = allGolfers.slice(10);
+      const totalScore = countedGolfers.reduce((sum, g) => sum + g.score, 0);
+
+      const wpRawScore = scores[entrant.winnerPick] ?? 0;
+      const wpEff = effectiveScore(wpRawScore);
+      const isWpBonus =
+        bonusGolferId !== undefined &&
+        entrant.winnerPick === bonusGolferId &&
+        wpEff < 99;
+
+      return {
+        name: entrant.name,
+        totalScore,
+        countedGolfers,
+        allGolfers: [...countedGolfers, ...bench],
+        winnerPick: {
+          id: entrant.winnerPick,
+          name: GOLFERS[entrant.winnerPick] ?? `Golfer ${entrant.winnerPick}`,
+          score: isWpBonus ? wpEff - 10 : wpEff,
+          isCut: wpEff >= 99
+        }
+      };
+    }
+
+    function rankResults(results) {
+      const ranked = results.map((r) => ({
+        ...r,
+        rank: 0,
+        strokesBack: null,
+        tiedWith: [],
+        winsTiebreaker: null
+      }));
+
+      ranked.sort((a, b) => {
+        if (a.totalScore !== b.totalScore) return a.totalScore - b.totalScore;
+        for (let i = 10; i < 20; i++) {
+          const aScore = a.allGolfers[i]?.score ?? 99;
+          const bScore = b.allGolfers[i]?.score ?? 99;
+          if (aScore !== bScore) return aScore - bScore;
+        }
+        return 0;
+      });
+
+      const winningScore = ranked[0]?.totalScore ?? 0;
+      let currentRank = 1;
+      for (let i = 0; i < ranked.length; i++) {
+        if (i > 0 && ranked[i].totalScore > ranked[i - 1].totalScore) currentRank = i + 1;
+        ranked[i].rank = currentRank;
+        ranked[i].strokesBack = i > 0 ? ranked[i].totalScore - winningScore : null;
+      }
+
+      for (let i = 0; i < ranked.length; i++) {
+        const tied = ranked.filter((r, j) => j !== i && r.totalScore === ranked[i].totalScore);
+        ranked[i].tiedWith = tied.map((r) => r.name);
+        if (tied.length === 0) {
+          ranked[i].winsTiebreaker = null;
+        } else {
+          const group = [ranked[i], ...tied];
+          let winner = ranked[i];
+          outer: for (let k = 10; k < 20; k++) {
+            const sc = group.map((r) => r.allGolfers[k]?.score ?? 99);
+            const best = Math.min(...sc);
+            const leaders = group.filter((r) => (r.allGolfers[k]?.score ?? 99) === best);
+            if (leaders.length === 1) { winner = leaders[0]; break outer; }
+          }
+          ranked[i].winsTiebreaker = winner.name === ranked[i].name;
+        }
+      }
+
+      return ranked;
+    }
+
+    function calculateLeaderboard(scores) {
+      return rankResults(ENTRANTS.map((e) => buildEntrantResult(e, scores)));
+    }
+
+    function calculateLeaderboardWithBonus(scores, bonusGolferId) {
+      return rankResults(ENTRANTS.map((e) => buildEntrantResult(e, scores, bonusGolferId)));
+    }
+
+    function computePoolStats(scores, leaderboard) {
+      let fieldLeaderId = -1;
+      let fieldLeaderScore = Infinity;
+      for (const [idStr, score] of Object.entries(scores)) {
+        const id = Number(idStr);
+        if (score < 99 && score < fieldLeaderScore) {
+          fieldLeaderScore = score;
+          fieldLeaderId = id;
+        }
+      }
+
+      const pickCounts = {};
+      for (const entrant of ENTRANTS) {
+        for (const id of entrant.picks) {
+          pickCounts[id] = (pickCounts[id] ?? 0) + 1;
+        }
+      }
+      let mostPickedId = -1;
+      let mostPickedCount = 0;
+      for (const [idStr, count] of Object.entries(pickCounts)) {
+        if (count > mostPickedCount) {
+          mostPickedCount = count;
+          mostPickedId = Number(idStr);
+        }
+      }
+
+      let mostCutsName = "";
+      let mostCutsCount = 0;
+      for (const e of leaderboard) {
+        const cutCount = e.allGolfers.filter((g) => g.isCut).length;
+        if (cutCount > mostCutsCount) {
+          mostCutsCount = cutCount;
+          mostCutsName = e.name;
+        }
+      }
+
+      const whoHas = [];
+      if (fieldLeaderId > -1) {
+        for (const entrant of ENTRANTS) {
+          if (entrant.picks.includes(fieldLeaderId)) whoHas.push(entrant.name);
+        }
+      }
+
+      return {
+        fieldLeader: {
+          id: fieldLeaderId,
+          name: fieldLeaderId > -1 ? GOLFERS[fieldLeaderId] ?? "Unknown" : "—",
+          score: fieldLeaderScore === Infinity ? 0 : fieldLeaderScore
+        },
+        mostPicked: {
+          id: mostPickedId,
+          name: mostPickedId > -1 ? GOLFERS[mostPickedId] ?? "Unknown" : "—",
+          score: mostPickedId > -1 ? (scores[mostPickedId] ?? 0) : 0,
+          count: mostPickedCount
+        },
+        mostCuts: { entrantName: mostCutsName, count: mostCutsCount },
+        whoHasFieldLeader: whoHas
+      };
+    }
+
+    function computeRoundSnapshots(roundScores) {
+      const maxRounds = Object.values(roundScores).reduce((max, arr) => Math.max(max, arr.length), 0);
+      const labels = ["Start", "After R1", "After R2", "After R3", "After R4"];
+      const snapshots = [];
+
+      for (let round = 0; round <= maxRounds; round++) {
+        if (round === 0) {
+          snapshots.push({
+            label: "Start",
+            rankings: ENTRANTS.map((e, i) => ({ name: e.name, rank: i + 1, score: 0 }))
+          });
+          continue;
+        }
+
+        const entrantScores = ENTRANTS.map((e) => {
+          const pickScores = e.picks.map((id) => {
+            const rounds = roundScores[id];
+            if (!rounds || rounds.length === 0) return 99;
+            const cum = rounds.slice(0, round).reduce((a, b) => a + b, 0);
+            if (round >= 3) {
+              const r2cum = (rounds[0] ?? 0) + (rounds[1] ?? 0);
+              if (r2cum > CUT_LINE) return 99;
+            }
+            return cum;
+          });
+          const best10 = [...pickScores].sort((a, b) => a - b).slice(0, 10).reduce((s, x) => s + x, 0);
+          return { name: e.name, score: best10 };
+        });
+
+        const sorted = [...entrantScores].sort((a, b) => a.score - b.score);
+        let currentRank = 1;
+        const rankMap = {};
+        for (let i = 0; i < sorted.length; i++) {
+          if (i > 0 && sorted[i].score !== sorted[i - 1].score) currentRank = i + 1;
+          rankMap[sorted[i].name] = currentRank;
+        }
+
+        snapshots.push({
+          label: labels[round] ?? `R${round}`,
+          rankings: ENTRANTS.map((e) => ({
+            name: e.name,
+            rank: rankMap[e.name] ?? 14,
+            score: entrantScores.find((x) => x.name === e.name)?.score ?? 0
+          }))
+        });
+      }
+
+      return snapshots;
+    }
+
+    // =========================================================================
+    // 4. APPLICATION STATE & RENDERING
+    // =========================================================================
+    const appState = {
+      scores: {},
+      roundSnapshots: [],
+      leaderboard: [],
+      projectedLeaderboard: [],
+      watchGolferId: 1,
+      projectedWatchLeaderboard: [],
+      stats: null,
+      isRefreshing: false,
+      isLoading: true,
+      lastUpdated: null,
+      error: null,
+      projLeaderExpanded: true,
+      projWatchExpanded: true,
+      expandedBench: new Set(),
+      chartStep: 0,
+      chartPlaying: false,
+      chartTimer: null
+    };
+
+    function scoreColorClass(score, isCut = false) {
+      if (isCut) return "score-even";
+      if (score < 0) return "score-under";
+      if (score > 0) return "score-over";
+      return "score-even";
+    }
+
+    function renderStatsBar() {
+      const el = document.getElementById("stats-bar");
+      const stats = appState.stats;
+      if (!stats) {
+        el.classList.add("hidden");
+        return;
+      }
+      el.classList.remove("hidden");
+
+      const leaderScore = formatScore(stats.fieldLeader.score);
+      const hasLeaderList = stats.whoHasFieldLeader.length > 0 ? stats.whoHasFieldLeader.join(", ") : "Nobody";
+      const leaderLastName = stats.fieldLeader.name.split(" ").slice(-1)[0];
+      const mostPickedLast = stats.mostPicked.name.split(" ").slice(-1)[0];
+      const mostPickedScore = formatScore(stats.mostPicked.score);
+
+      el.innerHTML = `
+        <div class="stat-card">
+          <div class="stat-label">${ICONS.flag} Field Leader</div>
+          <div class="stat-primary accent">${leaderLastName} (${leaderScore})</div>
+          <div class="stat-secondary">In pool: ${hasLeaderList}</div>
+        </div>
+        <div class="stat-card">
+          <div class="stat-label">${ICONS.star} Most Picked</div>
+          <div class="stat-primary">${mostPickedLast} (${mostPickedScore})</div>
+          <div class="stat-secondary">${stats.mostPicked.count} of ${ENTRANTS.length} entries</div>
+        </div>
+        <div class="stat-card">
+          <div class="stat-label">${ICONS.scissors} Most Cuts</div>
+          <div class="stat-primary">${stats.mostCuts.entrantName || "—"}</div>
+          <div class="stat-secondary">${stats.mostCuts.count} picks missed cut</div>
+        </div>
+        <div class="stat-card">
+          <div class="stat-label">${ICONS.users} Entries</div>
+          <div class="stat-primary">${ENTRANTS.length} entrants</div>
+          <div class="stat-secondary">Best 10 of 20 picks</div>
+        </div>
+      `;
+    }
+
+    function buildProjectedPanelHTML({ id, projected, current, bonusGolferName, bonusGolferScore, expanded, golferOptions, selectedGolferId }) {
+      const currentByName = Object.fromEntries(current.map((e) => [e.name, e]));
+      const rows = projected.map((e) => {
+        const cur = currentByName[e.name];
+        const hasWinnerPick = cur !== undefined && cur.winnerPick.score !== e.winnerPick.score;
+        return {
+          name: e.name,
+          projectedRank: e.rank,
+          projectedScore: e.totalScore,
+          currentRank: cur?.rank ?? e.rank,
+          currentScore: cur?.totalScore ?? e.totalScore,
+          hasWinnerPick
+        };
+      });
+
+      const bonusHolders = rows.filter((r) => r.hasWinnerPick);
+      const mid = Math.ceil(rows.length / 2);
+      const halves = [rows.slice(0, mid), rows.slice(mid)];
+
+      const renderMove = (cur, proj) => {
+        const diff = cur - proj;
+        if (diff > 0) return `<span class="move-up">${ICONS.trendUp}+${diff}</span>`;
+        if (diff < 0) return `<span class="move-down">${ICONS.trendDown}${diff}</span>`;
+        return `<span class="move-flat">${ICONS.minus}</span>`;
+      };
+
+      const titleMiddle = golferOptions
+        ? `<select id="watch-golfer-select" class="golfer-select" onclick="event.stopPropagation()">
+            ${golferOptions.map((g) => `<option value="${g.id}" ${g.id === selectedGolferId ? "selected" : ""}>${g.name} (${formatScore(g.score)})</option>`).join("")}
+           </select>`
+        : `<span style="color:var(--secondary)">${bonusGolferName} (${formatScore(bonusGolferScore)})</span>`;
+
+      const bodyHtml = expanded
+        ? `<div class="projected-body">
+            ${halves.map((half, col) => `
+              <div class="${col === 1 ? "projected-col-right" : ""}">
+                <div class="proj-table-head">
+                  <span>#</span>
+                  <span>Entry</span>
+                  <span style="text-align:right">Cur</span>
+                  <span style="text-align:right">Proj</span>
+                  <span style="text-align:right">Move</span>
+                </div>
+                <div>
+                  ${half.map((row) => `
+                    <div class="proj-row ${row.hasWinnerPick ? "bonus-row" : ""}">
+                      <span class="proj-rank ${row.projectedRank === 1 ? "rank-1" : ""}">${row.projectedRank}</span>
+                      <div class="proj-entry">
+                        <span>${row.name}</span>
+                        ${row.hasWinnerPick ? ICONS.starTiny : ""}
+                      </div>
+                      <span class="proj-cur">${formatScore(row.currentScore)}</span>
+                      <span class="proj-score ${scoreColorClass(row.projectedScore)}">${formatScore(row.projectedScore)}</span>
+                      <div class="proj-move">${renderMove(row.currentRank, row.projectedRank)}</div>
+                    </div>
+                  `).join("")}
+                </div>
+              </div>
+            `).join("")}
+          </div>`
+        : "";
+
+      return `
+        <div class="projected-panel">
+          <button class="projected-header-btn" data-toggle-panel="${id}">
+            <div class="projected-title-wrap">
+              ${ICONS.starGold}
+              <div style="min-width:0">
+                <div class="projected-title">
+                  <span>Projected if</span>
+                  ${titleMiddle}
+                  <span>wins</span>
+                </div>
+                <div class="projected-sub">
+                  Winner pick gets &minus;10 bonus &mdash; ${bonusHolders.length} ${bonusHolders.length === 1 ? "entry" : "entries"} benefit
+                </div>
+              </div>
+            </div>
+            <span style="color:var(--muted-foreground);margin-left:0.5rem;flex-shrink:0">
+              ${expanded ? ICONS.chevUp : ICONS.chevDown}
+            </span>
+          </button>
+          ${bodyHtml}
+        </div>
+      `;
+    }
+
+    function renderProjectedStandings() {
+      const container = document.getElementById("projected-grid");
+      const { stats, leaderboard, projectedLeaderboard, projectedWatchLeaderboard, scores, watchGolferId } = appState;
+
+      if (!stats || leaderboard.length === 0) {
+        container.innerHTML = "";
+        return;
+      }
+
+      const allGolfers = Object.entries(GOLFERS)
+        .map(([id, name]) => ({ id: Number(id), name, score: scores[Number(id)] ?? 0 }))
+        .filter((g) => g.score < 99 && g.score <= 1)
+        .sort((a, b) => a.score - b.score);
+
+      let html = "";
+      if (projectedLeaderboard.length > 0) {
+        html += buildProjectedPanelHTML({
+          id: "leader",
+          projected: projectedLeaderboard,
+          current: leaderboard,
+          bonusGolferName: stats.fieldLeader.name,
+          bonusGolferScore: stats.fieldLeader.score,
+          expanded: appState.projLeaderExpanded
+        });
+      }
+
+      if (allGolfers.length > 0 && projectedWatchLeaderboard.length > 0 && stats.fieldLeader.id !== watchGolferId) {
+        html += buildProjectedPanelHTML({
+          id: "watch",
+          projected: projectedWatchLeaderboard,
+          current: leaderboard,
+          bonusGolferName: GOLFERS[watchGolferId] ?? "",
+          bonusGolferScore: scores[watchGolferId] ?? 0,
+          expanded: appState.projWatchExpanded,
+          golferOptions: allGolfers,
+          selectedGolferId: watchGolferId
+        });
+      }
+
+      container.innerHTML = html;
+
+      container.querySelectorAll("[data-toggle-panel]").forEach((btn) => {
+        btn.addEventListener("click", () => {
+          const panelId = btn.getAttribute("data-toggle-panel");
+          if (panelId === "leader") appState.projLeaderExpanded = !appState.projLeaderExpanded;
+          else appState.projWatchExpanded = !appState.projWatchExpanded;
+          renderProjectedStandings();
+        });
+      });
+
+      const selectEl = document.getElementById("watch-golfer-select");
+      if (selectEl) {
+        selectEl.addEventListener("change", (e) => {
+          e.stopPropagation();
+          appState.watchGolferId = Number(e.target.value);
+          appState.projectedWatchLeaderboard = calculateLeaderboardWithBonus(appState.scores, appState.watchGolferId);
+          renderProjectedStandings();
+        });
+      }
+    }
+
+    function renderRankingChart() {
+      const container = document.getElementById("ranking-chart");
+      const snapshots = appState.roundSnapshots;
+      const numSteps = snapshots.length;
+
+      if (numSteps < 2) {
+        container.innerHTML = `
+          <div class="chart-card">
+            <div class="chart-header">
+              <div class="chart-title">Pool Rankings by Round</div>
+            </div>
+            <div class="chart-body">
+              <p style="font-size:0.875rem;color:var(--muted-foreground);padding:1.5rem 0;text-align:center;">
+                Round data not yet available &mdash; check back after Round 1 is complete.
+              </p>
+            </div>
+          </div>
+        `;
+        return;
+      }
+
+      const W = 960, H = 570, ML = 46, MR = 74, MT = 34, MB = 14;
+      const NUM_ENTRANTS = ENTRANTS.length;
+      const step = Math.min(appState.chartStep, numSteps - 1);
+      const isAtEnd = step >= numSteps - 1;
+
+      const xOf = (s) => (numSteps <= 1 ? ML + (W - ML - MR) / 2 : ML + (s / (numSteps - 1)) * (W - ML - MR));
+      const yOf = (rank) => MT + ((rank - 1) / Math.max(1, NUM_ENTRANTS - 1)) * (H - MT - MB);
+      const rankAt = (name, s) => snapshots[s]?.rankings.find((r) => r.name === name)?.rank ?? 14;
+
+      // Deconflict right-side labels
+      const rawLabels = ENTRANTS.map((e, idx) => {
+        const rank = snapshots[step].rankings.find((r) => r.name === e.name)?.rank ?? idx + 1;
+        return { name: e.name, y: yOf(rank), color: CHART_COLORS[idx % CHART_COLORS.length], rank };
+      }).sort((a, b) => a.y - b.y);
+      const GAP = 11;
+      for (let i = 1; i < rawLabels.length; i++) {
+        if (rawLabels[i].y < rawLabels[i - 1].y + GAP) rawLabels[i].y = rawLabels[i - 1].y + GAP;
+      }
+
+      const gridLinesSvg = snapshots.map((s, i) => `
+        <line x1="${xOf(i)}" x2="${xOf(i)}" y1="${MT}" y2="${H - MB}" stroke="rgba(255,255,255,0.05)" stroke-width="1" />
+        <text x="${xOf(i)}" y="${MT - 10}" text-anchor="middle" font-size="11" fill="${i === step ? "#e5e7eb" : "#6b7280"}" font-weight="${i === step ? "700" : "400"}">${s.label}</text>
+      `).join("");
+
+      const rankAxisSvg = [1, 7, 14, 21, NUM_ENTRANTS].map((r) =>
+        `<text x="${ML - 5}" y="${yOf(r) + 4}" text-anchor="end" font-size="9" fill="#4b5563">${r}</text>`
+      ).join("");
+
+      const guideLinesSvg = [1, 14, NUM_ENTRANTS].map((r) =>
+        `<line x1="${ML}" x2="${W - MR}" y1="${yOf(r)}" y2="${yOf(r)}" stroke="rgba(255,255,255,0.04)" stroke-width="1" />`
+      ).join("");
+
+      const pathsSvg = ENTRANTS.map((e, idx) => {
+        const color = CHART_COLORS[idx % CHART_COLORS.length];
+        let segs = "";
+        for (let seg = 0; seg < Math.min(step, numSteps - 1); seg++) {
+          const x0 = xOf(seg), y0 = yOf(rankAt(e.name, seg));
+          const x1 = xOf(seg + 1), y1 = yOf(rankAt(e.name, seg + 1));
+          const mx = (x0 + x1) / 2;
+          segs += `<path d="M ${x0},${y0} C ${mx},${y0} ${mx},${y1} ${x1},${y1}" stroke="${color}" stroke-width="1.8" fill="none" opacity="0.7" />`;
+        }
+        return segs;
+      }).join("");
+
+      const dotsSvg = ENTRANTS.map((e, idx) => {
+        const rank = rankAt(e.name, step);
+        const color = CHART_COLORS[idx % CHART_COLORS.length];
+        return `<g class="chart-dot-group" style="transform:translate(${xOf(step)}px, ${yOf(rank)}px)"><circle cx="0" cy="0" r="4.5" fill="${color}" /></g>`;
+      }).join("");
+
+      const labelsSvg = rawLabels.map((l) =>
+        `<text x="${W - MR + 7}" y="${l.y + 4}" font-size="10" fill="${l.color}" font-weight="600">${l.name}<tspan fill="#6b7280" font-weight="400"> #${l.rank}</tspan></text>`
+      ).join("");
+
+      const playBtnContent = appState.chartPlaying
+        ? `${ICONS.pause}<span>Pause</span>`
+        : isAtEnd
+          ? `${ICONS.play}<span>Replay</span>`
+          : `${ICONS.play}<span>Play</span>`;
+
+      container.innerHTML = `
+        <div class="chart-card">
+          <div class="chart-header">
+            <div class="chart-title">Pool Rankings by Round</div>
+            <div class="chart-controls">
+              <button class="btn-outline icon-only" id="chart-reset" title="Reset">${ICONS.skipBack}</button>
+              <button class="btn-outline icon-only" id="chart-prev" ${step === 0 ? "disabled" : ""} title="Previous round">${ICONS.chevLeft}</button>
+              <button class="btn-outline" id="chart-play">${playBtnContent}</button>
+              <button class="btn-outline icon-only" id="chart-next" ${isAtEnd ? "disabled" : ""} title="Next round">${ICONS.chevRight}</button>
+              <span class="chart-step-label">${snapshots[step]?.label || ""}</span>
+            </div>
+          </div>
+          <div class="chart-body">
+            <svg viewBox="0 0 ${W} ${H}" style="width:100%;height:auto;display:block;">
+              <rect x="${xOf(step) - 2}" y="${MT - 4}" width="4" height="${H - MT - MB + 8}" fill="rgba(255,255,255,0.08)" rx="2" />
+              ${gridLinesSvg}
+              ${rankAxisSvg}
+              ${guideLinesSvg}
+              ${pathsSvg}
+              ${dotsSvg}
+              ${labelsSvg}
+            </svg>
+          </div>
+        </div>
+      `;
+
+      document.getElementById("chart-reset").addEventListener("click", () => {
+        stopChartPlay();
+        appState.chartStep = 0;
+        renderRankingChart();
+      });
+      document.getElementById("chart-prev").addEventListener("click", () => {
+        stopChartPlay();
+        appState.chartStep = Math.max(0, appState.chartStep - 1);
+        renderRankingChart();
+      });
+      document.getElementById("chart-next").addEventListener("click", () => {
+        stopChartPlay();
+        appState.chartStep = Math.min(numSteps - 1, appState.chartStep + 1);
+        renderRankingChart();
+      });
+      document.getElementById("chart-play").addEventListener("click", () => {
+        if (appState.chartPlaying) {
+          stopChartPlay();
+          renderRankingChart();
+        } else {
+          if (appState.chartStep >= numSteps - 1) appState.chartStep = 0;
+          appState.chartPlaying = true;
+          renderRankingChart();
+          appState.chartTimer = setInterval(() => {
+            if (appState.chartStep >= appState.roundSnapshots.length - 1) {
+              stopChartPlay();
+              renderRankingChart();
+            } else {
+              appState.chartStep += 1;
+              renderRankingChart();
+            }
+          }, 2500);
+        }
+      });
+    }
+
+    function stopChartPlay() {
+      appState.chartPlaying = false;
+      if (appState.chartTimer) {
+        clearInterval(appState.chartTimer);
+        appState.chartTimer = null;
+      }
+    }
+
+    function buildGolferPillHTML(golfer, dim = false) {
+      const cls = golfer.isCut ? "cut" : (dim ? "dim" : "");
+      return `
+        <div class="golfer-pill ${cls}">
+          <span class="golfer-pill-name" title="${golfer.name}">${abbrevName(golfer.name)}</span>
+          <span class="golfer-pill-score ${scoreColorClass(golfer.score, golfer.isCut)}">${golfer.isCut ? "CUT" : formatScore(golfer.score)}</span>
+        </div>
+      `;
+    }
+
+    function renderLeaderboardCards() {
+      const container = document.getElementById("leaderboard-cards");
+      const { leaderboard, scores, isLoading } = appState;
+      document.getElementById("loading-state").classList.toggle("hidden", !isLoading);
+
+      if (isLoading || leaderboard.length === 0) {
+        container.innerHTML = "";
+        return;
+      }
+
+      const validScores = Object.values(scores).filter((s) => s < 99);
+      const fieldLowestScore = validScores.length > 0 ? Math.min(...validScores) : 0;
+
+      container.innerHTML = leaderboard.map((entrant) => {
+        const benchGolfers = entrant.allGolfers.slice(10);
+        const cutCount = entrant.allGolfers.filter((g) => g.isCut).length;
+        const activeCutInCounting = entrant.countedGolfers.filter((g) => g.isCut).length;
+        const isExpanded = appState.expandedBench.has(entrant.name);
+        const wpLeading = !entrant.winnerPick.isCut && entrant.winnerPick.score <= fieldLowestScore;
+
+        const tbHtml = entrant.tiedWith.length > 0
+          ? `<div class="tb-banner ${entrant.winsTiebreaker ? "tb-win" : ""}">
+              <div class="tb-left">
+                ${ICONS.scale}
+                <span style="white-space:nowrap;overflow:hidden;text-overflow:ellipsis;">
+                  Tied with ${entrant.tiedWith.join(", ")} &mdash; tiebreaker: winner pick
+                  <span class="${entrant.winnerPick.score < 0 ? "score-under" : ""}">
+                    ${entrant.winnerPick.isCut ? "CUT" : formatScore(entrant.winnerPick.score)}
+                  </span>
+                </span>
+              </div>
+              <span class="tb-pill">${entrant.winsTiebreaker ? "TB Win" : "TB Loss"}</span>
+            </div>`
+          : "";
+
+        const benchHtml = benchGolfers.length > 0
+          ? `<button class="bench-toggle" data-bench-entry="${entrant.name}">
+              ${isExpanded ? ICONS.chevUp : ICONS.chevDown}
+              ${isExpanded ? "Hide" : "Show"} remaining ${benchGolfers.length} picks
+            </button>
+            ${isExpanded
+              ? `<div class="bench-panel">
+                  <div class="bench-caption">Not counting &mdash; picks ranked 11th&ndash;20th</div>
+                  <div class="golfer-grid">${benchGolfers.map((g) => buildGolferPillHTML(g, true)).join("")}</div>
+                </div>`
+              : ""}`
+          : "";
+
+        return `
+          <div class="entrant-card ${entrant.rank === 1 ? "rank-1" : ""}">
+            <div class="entrant-card-header">
+              <div class="entrant-id-group">
+                <div class="rank-circle ${entrant.rank === 1 ? "gold" : ""}">${entrant.rank}</div>
+                <div class="entrant-name">${entrant.name}</div>
+                ${cutCount > 0 ? `<span class="cut-badge">${cutCount} cut</span>` : ""}
+              </div>
+              <div class="entrant-score-col">
+                <div class="entrant-total ${scoreColorClass(entrant.totalScore)}">${formatScore(entrant.totalScore)}</div>
+                ${entrant.strokesBack !== null ? `<div class="strokes-back">+${entrant.strokesBack} back</div>` : ""}
+              </div>
+            </div>
+
+            ${tbHtml}
+
+            <div class="entrant-card-content">
+              <div class="picks-layout">
+                <div>
+                  <div class="section-label">
+                    <span>Top 10 Counting Scores</span>
+                    ${activeCutInCounting > 0 ? `<span style="color:var(--red-score);opacity:0.8">${activeCutInCounting} cut counting</span>` : ""}
+                  </div>
+                  <div class="golfer-grid">
+                    ${entrant.countedGolfers.map((g) => buildGolferPillHTML(g, false)).join("")}
+                  </div>
+                </div>
+
+                <div class="winner-col">
+                  <div class="section-label">Winner Pick</div>
+                  <div class="winner-box ${wpLeading ? "leading" : ""}">
+                    <div>
+                      <div class="winner-name ${entrant.winnerPick.isCut ? "cut" : ""}">${entrant.winnerPick.name}</div>
+                      ${wpLeading ? `<span class="winner-sub-tag lead">Leading Field</span>` : ""}
+                      ${entrant.winnerPick.isCut ? `<span class="winner-sub-tag cut">Missed Cut</span>` : ""}
+                    </div>
+                    <span class="winner-score-badge ${entrant.winnerPick.isCut ? "cut" : (entrant.winnerPick.score < 0 ? "under" : "")}">
+                      ${entrant.winnerPick.isCut ? "CUT" : formatScore(entrant.winnerPick.score)}
+                    </span>
+                  </div>
+                </div>
+              </div>
+
+              ${benchHtml}
+            </div>
+          </div>
+        `;
+      }).join("");
+
+      container.querySelectorAll("[data-bench-entry]").forEach((btn) => {
+        btn.addEventListener("click", () => {
+          const name = btn.getAttribute("data-bench-entry");
+          if (appState.expandedBench.has(name)) appState.expandedBench.delete(name);
+          else appState.expandedBench.add(name);
+          renderLeaderboardCards();
+        });
+      });
+    }
+
+    function renderHeaderStatus() {
+      const statusEl = document.getElementById("status-text");
+      const wifiEl = document.getElementById("wifi-icon");
+      const errEl = document.getElementById("error-banner");
+      const btn = document.getElementById("btn-refresh");
+      const icon = document.getElementById("refresh-icon");
+      const label = document.getElementById("refresh-label");
+
+      if (appState.lastUpdated) {
+        statusEl.textContent = `Live scores — updated ${appState.lastUpdated.toLocaleTimeString()}`;
+      } else {
+        statusEl.textContent = "Fetching live scores...";
+      }
+
+      if (appState.error) {
+        wifiEl.innerHTML = ICONS.wifiOff;
+        errEl.textContent = appState.error;
+        errEl.classList.remove("hidden");
+      } else {
+        wifiEl.innerHTML = appState.lastUpdated ? ICONS.wifi : "";
+        errEl.classList.add("hidden");
+      }
+
+      btn.disabled = appState.isRefreshing || appState.isLoading;
+      icon.classList.toggle("spin", appState.isRefreshing);
+      label.textContent = appState.isRefreshing ? "Updating..." : "Refresh Scores";
+    }
+
+    function renderAll() {
+      renderHeaderStatus();
+      renderStatsBar();
+      renderProjectedStandings();
+      renderRankingChart();
+      renderLeaderboardCards();
+    }
+
+    async function loadScores(showRefreshing = false) {
+      if (showRefreshing) appState.isRefreshing = true;
+      appState.error = null;
+      renderHeaderStatus();
+
+      try {
+        const { scores: newScores, roundScores: newRoundScores } = await fetchLiveScores();
+        const newLeaderboard = calculateLeaderboard(newScores);
+        const newStats = computePoolStats(newScores, newLeaderboard);
+
+        appState.scores = newScores;
+        appState.roundSnapshots = computeRoundSnapshots(newRoundScores);
+        appState.leaderboard = newLeaderboard;
+        appState.stats = newStats;
+        appState.projectedLeaderboard =
+          newStats.fieldLeader.id > -1
+            ? calculateLeaderboardWithBonus(newScores, newStats.fieldLeader.id)
+            : [];
+        appState.projectedWatchLeaderboard = calculateLeaderboardWithBonus(newScores, appState.watchGolferId);
+        appState.lastUpdated = new Date();
+      } catch (err) {
+        appState.error = "Unable to fetch live scores from ESPN. Check your connection and try refreshing.";
+      } finally {
+        appState.isRefreshing = false;
+        appState.isLoading = false;
+        renderAll();
+      }
+    }
+
+    document.getElementById("btn-refresh").addEventListener("click", () => loadScores(true));
+
+    // Initial fetch + 60-second auto-refresh
+    loadScores();
+    setInterval(() => loadScores(), 60 * 1000);
+  </script>
+</body>
+</html>
